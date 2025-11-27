@@ -5,8 +5,8 @@
 package foreign.language.vocabulary;
 
 /**
- *
- * @author 29671jhkghjghjghj
+ *45t5trerte
+ * @author 29671jhkghjghjghjjfgzklfjgkl
  */
 public class ForeignLanguageVocabulary {
 
