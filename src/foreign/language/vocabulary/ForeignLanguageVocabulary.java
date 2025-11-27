@@ -5,13 +5,13 @@
 package foreign.language.vocabulary;
 
 /**
- *
- * @author 29671jhkghjghjghj ajsdlkhajofhkalshdfawsadfafe
+ *45t5trerte
+ * @author 29671jhkghjghjghjjfgzklfjgkl jjjjjjjjj
  */
 public class ForeignLanguageVocabulary {
 
     /**
-     * @param args the command line arguments
+     * @param args the command line argumentsdsafujiaof
      */
     public static void main(String[] args) {
         // TODO code application logic here
