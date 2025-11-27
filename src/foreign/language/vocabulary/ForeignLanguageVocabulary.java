@@ -11,7 +11,7 @@ package foreign.language.vocabulary;
 public class ForeignLanguageVocabulary {
 
     /**
-     * @param args the command line arguments
+     * @param args the command line argumentsdsafujiaof
      */
     public static void main(String[] args) {
         // TODO code application logic here
