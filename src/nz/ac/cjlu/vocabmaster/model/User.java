@@ -1,23 +1,33 @@
+// 包: nz.ac.cjlu.vocabmaster.model
+// User.java - 用户实体的模型。
+// 使用getter/setter封装用户数据（OO封装）。
+
 package nz.ac.cjlu.vocabmaster.model;
 
 import java.sql.Timestamp;
 
-// User.java - Model for user entity
-// Encapsulates user data with getters/setters (OO encapsulation)
+// User.java - 用户实体的模型
+// 使用getter/setter封装用户数据（OO封装）
 public class User {
+    // ID。
     private int id;
+    // 用户名。
     private String username;
+    // 密码。
     private String password;
+    // 创建日期。
     private Timestamp createdDate;
 
+    // 默认构造函数。
     public User() {}
 
+    // 带参数构造函数。
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    // Getters and Setters
+    // Getter和Setter
     public int getId() {
         return id;
     }

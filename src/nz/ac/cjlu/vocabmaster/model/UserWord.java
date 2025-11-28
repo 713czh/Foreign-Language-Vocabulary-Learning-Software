@@ -1,17 +1,27 @@
+// 包: nz.ac.cjlu.vocabmaster.model
+// UserWord.java - 用户词关系的模型。
+// 封装学习状态（OO封装）。
+
 package nz.ac.cjlu.vocabmaster.model;
 
 import java.sql.Date;
 
-// UserWord.java - Model for user-word relationship
-// Encapsulates learning status (OO encapsulation)
+// UserWord.java - 用户词关系的模型
+// 封装学习状态（OO封装）
 public class UserWord {
+    // 用户ID。
     private int userId;
+    // 词ID。
     private int wordId;
+    // 是否已知。
     private boolean known;
+    // 上次回顾日期。
     private Date lastReviewDate;
 
+    // 默认构造函数。
     public UserWord() {}
 
+    // 带参数构造函数。
     public UserWord(int userId, int wordId, boolean known, Date lastReviewDate) {
         this.userId = userId;
         this.wordId = wordId;
@@ -19,7 +29,7 @@ public class UserWord {
         this.lastReviewDate = lastReviewDate;
     }
 
-    // Getters and Setters
+    // Getter和Setter
     public int getUserId() {
         return userId;
     }

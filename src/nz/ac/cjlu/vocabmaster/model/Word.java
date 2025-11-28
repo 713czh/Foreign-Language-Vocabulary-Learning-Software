@@ -1,16 +1,27 @@
+// 包: nz.ac.cjlu.vocabmaster.model
+// Word.java - 词实体的模型。
+// 封装词数据包括例句。
+
 package nz.ac.cjlu.vocabmaster.model;
 
-// Word.java - Model for word entity
-// Encapsulates word data including examples
+// Word.java - 词实体的模型
+// 封装词数据包括例句
 public class Word {
+    // ID。
     private int id;
+    // 英语。
     private String english;
+    // 中文。
     private String chinese;
+    // 英语例句。
     private String exampleEn;
+    // 中文例句。
     private String exampleCn;
 
+    // 默认构造函数。
     public Word() {}
 
+    // 带参数构造函数。
     public Word(String english, String chinese, String exampleEn, String exampleCn) {
         this.english = english;
         this.chinese = chinese;
@@ -18,7 +29,7 @@ public class Word {
         this.exampleCn = exampleCn;
     }
 
-    // Getters and Setters
+    // Getter和Setter
     public int getId() {
         return id;
     }

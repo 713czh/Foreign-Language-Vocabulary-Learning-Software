@@ -1,6 +1,9 @@
+// 包: nz.ac.cjlu.vocabmaster.view
+// DailyReviewPanel.java - 复用StudyPanel以回顾（继承以OO复用）。
+
 package nz.ac.cjlu.vocabmaster.view;
 
-// DailyReviewPanel.java - Reuses StudyPanel for review (inheritance for OO reuse)
+// DailyReviewPanel.java - 复用StudyPanel以回顾（继承以OO复用）
 public class DailyReviewPanel extends StudyPanel {
-    // Inherits all from StudyPanel, no additional code needed for reuse
+    // 继承StudyPanel的所有内容，无需额外代码以复用。
 }
