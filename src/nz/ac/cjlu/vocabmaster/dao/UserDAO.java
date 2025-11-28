@@ -1,57 +1,68 @@
-// 包: nz.ac.cjlu.vocabmaster.dao
-// UserDAO.java - 用户操作的DAO。
-
 package nz.ac.cjlu.vocabmaster.dao;
 
 import nz.ac.cjlu.vocabmaster.model.User;
 import java.sql.*;
 
-// UserDAO.java - 用户操作的DAO
 public class UserDAO {
-    // 数据库URL。
-    private static final String DB_URL = "jdbc:derby:vocabmaster_db;create=true";
+    private static final String DB_URL = "jdbc:derby:vocabmaster_db";
 
-    // 方法: 根据用户名查找用户。
-    // 返回User对象或null。
-    public User findByUsername(String username) {
+    // 注册用户 - 返回 boolean（成功true，失败false）
+    public boolean register(User user) {
+        String sql = "INSERT INTO USERS (USERNAME, PASSWORD) VALUES (?, ?)";
         try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM USERS WHERE USERNAME = ?")) {
-            // 设置参数。
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getPassword()); // 明文存储！不加密！
+
+            int rows = stmt.executeUpdate();
+            if (rows > 0) {
+                // 获取生成的ID
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        user.setId(rs.getInt(1));
+                    }
+                }
+                System.out.println("注册成功：" + user.getUsername());
+                return true;
+            }
+        } catch (SQLException e) {
+            if (e.getMessage().contains("UNIQUE")) {
+                System.out.println("用户名已存在！");
+            } else {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    // 通过用户名查找用户
+    public User findByUsername(String username) {
+        String sql = "SELECT * FROM USERS WHERE USERNAME = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                // 创建User对象并设置属性。
                 User user = new User();
                 user.setId(rs.getInt("ID"));
                 user.setUsername(rs.getString("USERNAME"));
-                user.setPassword(rs.getString("PASSWORD"));
-                user.setCreatedDate(rs.getTimestamp("CREATED_DATE"));
+                user.setPassword(rs.getString("PASSWORD")); // 明文
                 return user;
             }
         } catch (SQLException e) {
-            // 打印异常栈。
             e.printStackTrace();
         }
         return null;
     }
 
-    // 方法: 插入用户。
-    // 返回生成的ID或-1如果失败。
-    public int insert(User user) {
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO USERS (USERNAME, PASSWORD) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            // 设置参数。
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-            stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            // 打印异常栈。
-            e.printStackTrace();
+    // 登录验证（明文比对）
+    public User validateUser(String username, String password) {
+        User user = findByUsername(username);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
         }
-        return -1;
+        return null;
     }
 }

@@ -1,90 +1,72 @@
-// 包: nz.ac.cjlu.vocabmaster.controller
-// 注意: 此包包含处理用户交互的控制器，将业务逻辑委托给服务，并更新视图。
-// 所有控制器遵循SOLID原则: 单一责任（处理特定UI事件）、依赖倒转（依赖于服务和DAO等抽象）。
-
-package nz.ac.cjlu.vocabmaster.controller;
+  package nz.ac.cjlu.vocabmaster.controller;
 
 import nz.ac.cjlu.vocabmaster.model.User;
-import nz.ac.cjlu.vocabmaster.dao.UserDAO;
+import nz.ac.cjlu.vocabmaster.service.AuthService;
 import nz.ac.cjlu.vocabmaster.view.LoginPanel;
 import nz.ac.cjlu.vocabmaster.view.RegisterPanel;
 import nz.ac.cjlu.vocabmaster.view.MainFrame;
-import nz.ac.cjlu.vocabmaster.service.AuthService;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-// AuthController.java
-// 处理认证逻辑: 注册和登录。
-// 将复杂业务规则（例如密码哈希、唯一性检查）委托给AuthService。
-// 通过ActionListener实现演示多态。
 public class AuthController {
-    // 登录和注册的视图组件。
     private LoginPanel loginView;
     private RegisterPanel registerView;
-    // 主应用程序框架，用于面板切换。
     private MainFrame mainFrame;
-    // 认证逻辑的服务。
     private AuthService authService;
-    // 用户数据访问的DAO。
-    private UserDAO userDAO;
 
-    // 构造函数: 初始化视图、DAO、服务，并添加事件监听器。
-    // 遵循依赖倒转，通过注入依赖。
+    // 关键：这个构造函数必须和 Main.java 里 new AuthController(...) 完全匹配！
     public AuthController(LoginPanel loginView, RegisterPanel registerView, MainFrame mainFrame) {
         this.loginView = loginView;
         this.registerView = registerView;
         this.mainFrame = mainFrame;
-        this.userDAO = new UserDAO();
-        this.authService = new AuthService(userDAO);
+        this.authService = new AuthService();
 
-        // 为登录按钮添加监听器。
+        // 绑定登录按钮事件
         loginView.addLoginListener(new LoginListener());
-        // 为注册按钮添加监听器。
+
+        // 绑定注册按钮事件（RegisterPanel 里你自己也写了注册逻辑，这里再加一层保险）
         registerView.addRegisterListener(new RegisterListener());
     }
 
-    // 内部类: 登录监听器，实现ActionListener接口。
+    // 登录
     class LoginListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // 获取用户名和密码。
-            String username = loginView.getUsername();
+            String username = loginView.getUsername().trim();
             String password = loginView.getPassword();
-            try {
-                // 调用服务进行登录验证。
-                User user = authService.login(username, password);
-                if (user != null) {
-                    // 登录成功，切换到仪表盘并显示消息。
-                    mainFrame.showDashboard(user.getId());
-                    JOptionPane.showMessageDialog(mainFrame, "登录成功!");
-                } else {
-                    // 无效凭证，显示错误消息。
-                    JOptionPane.showMessageDialog(mainFrame, "无效凭证。", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (Exception ex) {
-                // 登录失败，显示异常消息。
-                JOptionPane.showMessageDialog(mainFrame, "登录失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(mainFrame, "请填写用户名和密码！", "错误", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            User user = authService.login(username, password);
+            if (user != null) {
+                JOptionPane.showMessageDialog(mainFrame, "登录成功！欢迎 " + username + "！");
+                mainFrame.showDashboard(user.getId());
+            } else {
+                JOptionPane.showMessageDialog(mainFrame, "用户名或密码错误！", "登录失败", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    // 内部类: 注册监听器，实现ActionListener接口。
+    // 注册（你 RegisterPanel 里已经写了，这里再加一层也可以用）
     class RegisterListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // 获取用户名和密码。
-            String username = registerView.getUsername();
+            String username = registerView.getUsername().trim();
             String password = registerView.getPassword();
-            try {
-                // 调用服务进行注册。
-                User user = authService.register(username, password);
-                // 注册成功，显示消息并切换到登录。
-                JOptionPane.showMessageDialog(mainFrame, "注册成功! 用户ID: " + user.getId());
-                mainFrame.showLogin();
-            } catch (Exception ex) {
-                // 注册失败，显示异常消息。
-                JOptionPane.showMessageDialog(mainFrame, "注册失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(mainFrame, "请填写完整信息！");
+                return;
+            }
+
+            if (authService.register(username, password)) {
+                JOptionPane.showMessageDialog(mainFrame, "注册成功！请登录", "成功", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(mainFrame, "注册失败，用户名已存在！", "错误", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

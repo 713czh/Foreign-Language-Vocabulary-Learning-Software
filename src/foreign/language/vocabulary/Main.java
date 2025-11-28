@@ -1,7 +1,3 @@
-// 包: foreign.language.vocabulary
-// 这是应用程序的入口点。它初始化数据库、设置主GUI框架，并配置初始面板和控制器。
-// 演示OO封装，通过在集中的main方法中初始化组件。
-
 package foreign.language.vocabulary;
 
 import nz.ac.cjlu.vocabmaster.dao.DatabaseInitializer;
@@ -9,31 +5,40 @@ import nz.ac.cjlu.vocabmaster.view.MainFrame;
 import nz.ac.cjlu.vocabmaster.view.LoginPanel;
 import nz.ac.cjlu.vocabmaster.view.RegisterPanel;
 import nz.ac.cjlu.vocabmaster.controller.AuthController;
+import java.awt.CardLayout;
+import javax.swing.JPanel;
 
 public class Main {
-    // main方法: 程序执行的入口点。
-    // 初始化DB、创建GUI组件，并以登录屏幕启动应用程序。
-    // 遵循SOLID的单一责任原则: 只处理启动逻辑。
     public static void main(String[] args) {
-        // 自动初始化嵌入式Derby数据库（无需手动配置）。
-        DatabaseInitializer.initialize();  // 自动设置DB
+        // 1. 初始化数据库（自动建表）
+        DatabaseInitializer.initialize();
 
-        // 使用MVC的View层创建主应用程序框架。
+        // 2. 创建主窗口
         MainFrame frame = new MainFrame();
-        
-        // 创建登录和注册面板（View组件）。
-        LoginPanel login = new LoginPanel();
-        RegisterPanel register = new RegisterPanel();
 
-        // 将面板添加到框架的CardLayout中，用于动态切换。
-        frame.addPanel("login", login);
-        frame.addPanel("register", register);
-        
-        // 实例化AuthController来处理登录/注册事件（MVC Controller）。
-        new AuthController(login, register, frame);
+        // 3. 创建 CardLayout 和容器面板
+        JPanel cardPanel = new JPanel();
+        CardLayout cardLayout = new CardLayout();
+        cardPanel.setLayout(cardLayout);
 
-        // 显示初始登录面板并使框架可见。
-        frame.showPanel("login");  // 以登录开始
+        // 4. 创建登录和注册面板（关键！传 lambda 控制页面跳转）
+        LoginPanel loginPanel = new LoginPanel(() -> cardLayout.show(cardPanel, "register"));
+        RegisterPanel registerPanel = new RegisterPanel(() -> cardLayout.show(cardPanel, "login"));
+
+        // 5. 把两个面板加入 CardLayout
+        cardPanel.add(loginPanel, "login");
+        cardPanel.add(registerPanel, "register");
+
+        // 6. 把 cardPanel 加到 MainFrame 中
+        frame.add(cardPanel);
         frame.setVisible(true);
+
+        // 7. 创建 AuthController，绑定事件（这句必须在面板创建后！）
+        new AuthController(loginPanel, registerPanel, frame);
+
+        // 8. 默认显示登录页
+        cardLayout.show(cardPanel, "login");
+
+        System.out.println("词汇大师启动成功！现在可以注册 admin 了！");
     }
 }
